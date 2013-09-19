@@ -15,25 +15,34 @@ I tr(I    r, D) { I z=1;DO(r,z=z*d[i]); R z; } // total number of cells.
 A ar(I t, r, D) { A z=(A)ma(5+tr(r,d));z->t=t,z->r=r,mv(z->d,d,r);R z;}
 
 // print
-_ nl(         ) { P("\n");}
-_ pi(  i      ) { P("%d ",i);}
-_ pr(A w      ) { I r=w->r,*d=w->d,n=tr(r,d);
-                    //P("pr> printing %ld values.\n", n);
-                    DO(r,pi(d[i]))         // print dimensions if rank>0
-                    DO(n, pi(w->p[i]));    // print values
-                    nl();}
+_ nl(    ) { P("\n");}
+_ pi(  i ) { P("%d ",i);}
+_ pr(A w ) { I r=w->r,*d=w->d,n=tr(r,d);
+               P("[ "); DO(r,pi(d[i])) P("]: "); // print shape
+               DO(n, pi(w->p[i]));               // print values
+               nl();}
 
 // verbs
 #define MO(fn) A fn(A w)
 #define DY(fn) A fn(A a, A w)
-MO(  id){ P("id.\n");  R w;} // id function
-DY( nop){ P("nop.\n"); R w;} // no-op (J: "]")
+MO(  id){   P("id\n.");                    // identity function
+          R w;}
+MO(iota){ I n=*w->p;                       // iota/enumerate
+          A z=ar(0,1,&n);
+            DO(n,z->p[i]=i);
+          R z;}
+DY( nop){   P("nop.\n");                   // no-op (J: "]")
+          R w;}
+DY( add){ I r=w->r, *d=w->d, n=tr(r,d);
+          A z=ar(0,r,d);
+            DO(n,z->p[i]=a->p[i]+w->p[i]);
+          R z;}
 
 // eval
 A st[26];                                     // storage for pronouns
-C vt[]="+{~<#,";                                  // verb table
-A (*mo[])()={ id,  id,  id,  id,  id,  id,  id},  // monadic
-  (*dy[])()={nop, nop, nop, nop, nop, nop, nop};  // dyadic
+C vt[]="+!~<#,";                                  // verb table
+A (*mo[])()={ id,  id, iota, id,  id,  id,  id},  // monadic
+  (*dy[])()={nop, add,  nop, nop, nop, nop, nop};  // dyadic
 
 I qp(I a) { R a>='a'&&a<='z';}          // is it a pronoun?
 I qv(I a) { R a<'a';}                   // is it a verb?
