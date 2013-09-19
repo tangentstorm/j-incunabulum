@@ -1,3 +1,5 @@
 #import <stdio.h>
+typedef char C;
 #define P printf
-main() { P("hello world\n"); }
+#define sz 80
+main() {C s[sz];while(fgets(s,sz,stdin))P("%s",s);}
