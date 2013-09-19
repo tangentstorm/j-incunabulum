@@ -20,10 +20,14 @@ _ pi(  i      ) { P("%d ",i);}
 _ pr(A w      ) { I r=w->r,*d=w->d,n=tr(r,d); DO(r,pi(d[i]))}
 
 // eval
-I st[26];                                     // storage for pronouns
-I qp(  a      ) { R a>='a'&&a<='z';}          // is it a pronoun?
-I qv(  a      ) { R a<'a';}                   // is it a verb?
-A ev(I*e      ) { R(A)e;}
+A st[26];                                     // storage for pronouns
+I qp(I a      ) { R a>='a'&&a<='z';}          // is it a pronoun?
+I qv(I a      ) { R a<'a';}                   // is it a verb?
+A ev(I*e      ) { A a=(A)*e; C c=*e;
+                    if(qp(c)){                // eval pronouns:
+                        if(e[1]=='=') R st[c-'a']=ev(e+2);   // set
+                        a=st[c-'a'];}                        // get
+                  R a; }
 
 // read (nouns and verbs)
 I nn(C c      ) { A z;if(c<'0'||c>'9') R 0;   // nn only handles 0..9
